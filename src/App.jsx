@@ -5,14 +5,22 @@ import './App.css'
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./pages/home";
+import FinanceManager from './pages/financemanager';
+import Budgets from './pages/budgets';
+import Navbar from './components/navbar';
 
 function App() {
     return (
       <Router>
+          <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/gestor-finanzas" element={<FinanceManager />} />
+          <Route path="/presupuestos" element={<Budgets />} />
+
         </Routes>
       </Router>
+     
     );
   // const [count, setCount] = useState(0)
 
