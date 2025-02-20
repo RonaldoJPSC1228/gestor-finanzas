@@ -16,9 +16,12 @@ function Navbar() {
             <li className="nav-item">
               <Link className="nav-link" to="/gestor-finanzas">Gestión de Finanzas</Link>
             </li>
-            {/* <li className="nav-item">
+            <li className="nav-item">
               <Link className="nav-link" to="/presupuestos">Presupuestos</Link>
-            </li> */}
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/control">Control</Link>
+            </li>
           </ul>
         </div>
       </div>
