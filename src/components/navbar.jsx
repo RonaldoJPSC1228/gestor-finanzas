@@ -17,6 +17,9 @@ function Navbar() {
               <Link className="nav-link" to="/gestor-finanzas">Gestión de Finanzas</Link>
             </li>
             <li className="nav-item">
+              <Link className="nav-link" to="/etiquetas">Etiquetas</Link>
+            </li>
+            <li className="nav-item">
               <Link className="nav-link" to="/presupuestos">Presupuestos</Link>
             </li>
             <li className="nav-item">
