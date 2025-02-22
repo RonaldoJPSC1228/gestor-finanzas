@@ -87,7 +87,7 @@ function Budgets({ budgets, setBudgets }) {
                   variant="warning"
                   size="sm"
                   className="m-1"
-                  onClick={() => navigate(`/budget/${budget.id}`)}
+                  onClick={() => navigate(`/presupuesto/${budget.id}`)}
                 >
                   Ver Detalles
                 </Button>

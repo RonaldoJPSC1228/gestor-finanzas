@@ -1,239 +1,210 @@
-import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Form, Button, Modal } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Button, Modal, Badge } from "react-bootstrap";
+import { Eye } from "react-bootstrap-icons";
 import { Pie } from "react-chartjs-2";
-import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
-// Registrar elementos de Chart.js
-Chart.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const BudgetDetails = ({ budgets, setBudgets }) => {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const budget = budgets?.find((b) => b.id == id);
+  const budgetId = Number(id);
 
-  // Estados para agregar subitems
-  const [newSubItemName, setNewSubItemName] = useState("");
-  const [newSubItemPrice, setNewSubItemPrice] = useState("");
-  const [newSubItemDescription, setNewSubItemDescription] = useState("");
-  const [newSubItemColor, setNewSubItemColor] = useState("#000000");
-  const [newSubItemLink, setNewSubItemLink] = useState("");
-
-  // Estados para editar subitems
-  const [editModalShow, setEditModalShow] = useState(false);
-  const [editSubItem, setEditSubItem] = useState(null);
-
-  // Estado para modal de gráficos
+  const [items, setItems] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   const [showChartModal, setShowChartModal] = useState(false);
 
+  useEffect(() => {
+    const storedItems = JSON.parse(localStorage.getItem("items")) || [];
+    setItems(storedItems);
+  }, []);
+
+  const budget = budgets.find((b) => b.id === budgetId);
+
   if (!budget) {
-    return <h3 className="text-danger text-center">Presupuesto no encontrado</h3>;
+    return <p>Presupuesto no encontrado.</p>;
   }
 
-  // Calcular total de subitems
-  const totalSubItems = budget.subitems.reduce((acc, sub) => acc + Number(sub.price), 0);
+  // 🔹 Evitar bucle infinito al actualizar los subitems del presupuesto
+  useEffect(() => {
+    if (!budget) return;
 
-  // Datos para el gráfico
+    const updatedBudgets = budgets.map((b) => {
+      if (b.id === budgetId) {
+        const updatedSubitems = b.subitems.map((subitem) => {
+          const updatedItem = items.find((item) => item.id === subitem.id);
+          return updatedItem || subitem;
+        });
+
+        if (JSON.stringify(updatedSubitems) !== JSON.stringify(b.subitems)) {
+          return { ...b, subitems: updatedSubitems };
+        }
+      }
+      return b;
+    });
+
+    if (JSON.stringify(updatedBudgets) !== JSON.stringify(budgets)) {
+      setBudgets(updatedBudgets);
+    }
+  }, [items]);
+
+  const handleAddItemToBudget = (item) => {
+    if (!budget.subitems.some((sub) => sub.id === item.id)) {
+      const updatedBudgets = budgets.map((b) =>
+        b.id === budgetId ? { ...b, subitems: [...b.subitems, item] } : b
+      );
+      setBudgets(updatedBudgets);
+    }
+  };
+
+  const handleRemoveItemFromBudget = (itemId) => {
+    const updatedBudgets = budgets.map((b) =>
+      b.id === budgetId ? { ...b, subitems: b.subitems.filter((item) => item.id !== itemId) } : b
+    );
+    setBudgets(updatedBudgets);
+  };
+
+  // 🔹 Generar colores aleatorios para el gráfico
+  const generateRandomColors = (num) =>
+    Array.from({ length: num }, () =>
+      `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.7)`
+    );
+
+  // 🔹 Configuración del gráfico de pastel
   const chartData = {
-    labels: budget.subitems.map((sub) => sub.name),
+    labels: budget.subitems.map((item) => item.name),
     datasets: [
       {
-        data: budget.subitems.map((sub) => Number(sub.price)),
-        backgroundColor: budget.subitems.map((sub) => sub.color || "#000000"),
-        hoverOffset: 4,
+        data: budget.subitems.map((item) => item.price),
+        backgroundColor: generateRandomColors(budget.subitems.length),
+        borderWidth: 1,
       },
     ],
   };
 
-  // Agregar subitem
-  const handleAddSubItem = (e) => {
-    e.preventDefault();
-    if (newSubItemName.trim() === "") return alert("Nombre obligatorio");
-
-    const newSubItem = {
-      id: Date.now(),
-      name: newSubItemName,
-      price: newSubItemPrice || "0",
-      description: newSubItemDescription,
-      color: newSubItemColor,
-      link: newSubItemLink,
-    };
-
-    setBudgets(
-      budgets.map((b) =>
-        b.id === budget.id ? { ...b, subitems: [...b.subitems, newSubItem] } : b
-      )
-    );
-
-    // Resetear campos del formulario
-    setNewSubItemName("");
-    setNewSubItemPrice("");
-    setNewSubItemDescription("");
-    setNewSubItemColor("#000000");
-    setNewSubItemLink("");
-  };
-
-  // Eliminar subitem
-  const handleDeleteSubItem = (subItemId) => {
-    setBudgets(
-      budgets.map((b) =>
-        b.id === budget.id
-          ? { ...b, subitems: b.subitems.filter((sub) => sub.id !== subItemId) }
-          : b
-      )
-    );
-  };
-
-  // Abrir modal de edición con los datos del subitem seleccionado
-  const handleEditSubItem = (subitem) => {
-    console.log("Editando subitem:", subitem); // Depuración
-    setEditSubItem({ ...subitem });
-    setEditModalShow(true);
-  };
-
-  // Guardar cambios del subitem editado
-  const handleSaveEdit = () => {
-    if (!editSubItem) return;
-
-    setBudgets(
-      budgets.map((b) =>
-        b.id === budget.id
-          ? {
-              ...b,
-              subitems: b.subitems.map((sub) =>
-                sub.id === editSubItem.id ? editSubItem : sub
-              ),
-            }
-          : b
-      )
-    );
-    setEditModalShow(false);
-  };
-
   return (
     <div className="container mt-4">
-      <h2>{budget.name} - ${budget.amount}</h2>
+      <h2>Detalles del Presupuesto: {budget.name}</h2>
+      <p>
+        <strong>Cantidad:</strong> ${budget.amount}
+      </p>
 
-      {/* Formulario para agregar subitems */}
-      <h4 className="mb-3">Agregar Subitem</h4>
-      <Form onSubmit={handleAddSubItem}>
-        <Form.Group className="mb-2">
-          <Form.Control type="text" placeholder="Nombre" value={newSubItemName} onChange={(e) => setNewSubItemName(e.target.value)} />
-        </Form.Group>
-        <Form.Group className="mb-2">
-          <Form.Control type="number" placeholder="Precio" value={newSubItemPrice} onChange={(e) => setNewSubItemPrice(e.target.value)} />
-        </Form.Group>
-        <Form.Group className="mb-2">
-          <Form.Control as="textarea" rows={2} placeholder="Descripción" value={newSubItemDescription} onChange={(e) => setNewSubItemDescription(e.target.value)} />
-        </Form.Group>
-        <Form.Group className="mb-2">
-          <Form.Control type="color" value={newSubItemColor} onChange={(e) => setNewSubItemColor(e.target.value)} />
-        </Form.Group>
-        <Form.Group className="mb-2">
-          <Form.Control type="text" placeholder="URL (opcional)" value={newSubItemLink} onChange={(e) => setNewSubItemLink(e.target.value)} />
-        </Form.Group>
-        <Button type="submit">Agregar</Button>
-      </Form>
-
-      <hr />
-
-      {/* Lista de subitems */}
-      <h4>Subitems</h4>
-      {/* Total de subitems */}
-      <h4 className="mt-3 text-primary">Total de subitems: ${totalSubItems}</h4>
-      {/* Botón para abrir modal con gráficos */}
-      <Button className="mb-3" variant="success" onClick={() => setShowChartModal(true)}>
-        Ver Gráficos
-      </Button>
-      <ul className="list-group">
-        {budget.subitems.map((subitem) => (
-          <li key={subitem.id} className="list-group-item d-flex justify-content-between align-items-center" style={{ borderLeft: `5px solid ${subitem.color}` }}>
-            <div>
-              <strong>{subitem.name}</strong> - ${subitem.price}
-              <p>{subitem.description}</p>
-              {subitem.link && (
-                <a href={subitem.link} target="_blank" rel="noopener noreferrer" className="btn btn-info btn-sm">
-                  Ver más
-                </a>
-              )}
-            </div>
-            <div>
-              <Button variant="warning" size="sm" className="me-2" onClick={() => handleEditSubItem(subitem)}>
-                Editar
-              </Button>
-              <Button variant="danger" size="sm" onClick={() => handleDeleteSubItem(subitem.id)}>
-                Eliminar
-              </Button>
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      <Button variant="secondary" className="mt-3" onClick={() => navigate("/presupuestos")}>
-        Volver
+      <Button variant="primary" className="mb-3 me-2" onClick={() => setShowModal(true)}>
+        Items
       </Button>
 
-      {/* Modal de gráficos */}
-      <Modal show={showChartModal} onHide={() => setShowChartModal(false)}>
+      <Button variant="info" className="mb-3" onClick={() => setShowChartModal(true)}>
+        Ver Gráfico
+      </Button>
+
+      {/* Modal para seleccionar ítems */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Distribución de Subitems</Modal.Title>
+          <Modal.Title>Seleccionar Ítems</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {budget.subitems.length > 0 ? <Pie data={chartData} /> : <p className="text-center">No hay subitems para mostrar en el gráfico.</p>}
+          <ul className="list-group">
+            {items.length > 0 ? (
+              items.map((item) => {
+                const isAlreadyAdded = budget.subitems.some((sub) => sub.id === item.id);
+                return (
+                  <li key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>{item.name}</strong> - ${item.price}
+                      <div>
+                        {item.tags &&
+                          item.tags.map((tag, index) => (
+                            <Badge key={`${item.id}-${index}`} bg="info" className="me-1">
+                              {tag}
+                            </Badge>
+                          ))}
+                      </div>
+                    </div>
+                    <div>
+                      {item.url && (
+                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="me-2">
+                          <Eye size={20} />
+                        </a>
+                      )}
+                      <Button
+                        variant="success"
+                        size="sm"
+                        onClick={() => handleAddItemToBudget(item)}
+                        disabled={isAlreadyAdded}
+                      >
+                        {isAlreadyAdded ? "Agregado" : "Agregar"}
+                      </Button>
+                    </div>
+                  </li>
+                );
+              })
+            ) : (
+              <p>No hay ítems disponibles.</p>
+            )}
+          </ul>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowChartModal(false)}>Cerrar</Button>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cerrar
+          </Button>
         </Modal.Footer>
       </Modal>
 
-      {/* Modal de edición */}
-      <Modal show={editModalShow} onHide={() => setEditModalShow(false)}>
+      {/* Modal para el gráfico */}
+      <Modal show={showChartModal} onHide={() => setShowChartModal(false)}>
         <Modal.Header closeButton>
-            <Modal.Title>Editar Subitem</Modal.Title>
+          <Modal.Title>Gráfico de Gastos</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            {editSubItem && (
-                <Form>
-                    <Form.Group className="mb-2">
-                    <Form.Label>Nombre</Form.Label>
-                    <Form.Control 
-                        type="text" 
-                        value={editSubItem.name} 
-                        onChange={(e) => setEditSubItem({ ...editSubItem, name: e.target.value })} 
-                    />
-                    </Form.Group>
-                    <Form.Group className="mb-2">
-                    <Form.Label>Precio</Form.Label>
-                    <Form.Control 
-                        type="number" 
-                        value={editSubItem.price} 
-                        onChange={(e) => setEditSubItem({ ...editSubItem, price: e.target.value })} 
-                    />
-                    </Form.Group>
-                    <Form.Group className="mb-2">
-                    <Form.Label>Color</Form.Label>
-                    <Form.Control 
-                        type="color" 
-                        value={editSubItem.color} 
-                        onChange={(e) => setEditSubItem({ ...editSubItem, color: e.target.value })} 
-                    />
-                    </Form.Group>
-                    <Form.Group className="mb-2">
-                    <Form.Label>URL</Form.Label>
-                    <Form.Control 
-                        type="text" 
-                        value={editSubItem.link || ""} 
-                        onChange={(e) => setEditSubItem({ ...editSubItem, link: e.target.value })} 
-                    />
-                    </Form.Group>
-                    <Button variant="primary" onClick={handleSaveEdit}>
-                    Guardar Cambios
-                    </Button>
-                </Form>
-                )}
-            </Modal.Body>
-        </Modal>
+          {budget.subitems.length > 0 ? (
+            <Pie data={chartData} />
+          ) : (
+            <p>No hay datos para mostrar en el gráfico.</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowChartModal(false)}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
+      <hr />
+
+      {/* Lista de ítems en el presupuesto */}
+      <h4>Ítems en este Presupuesto</h4>
+      <ul className="list-group">
+        {budget.subitems.length > 0 ? (
+          budget.subitems.map((item) => (
+            <li key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{item.name}</strong> - ${item.price}
+                <div>
+                  {item.tags &&
+                    item.tags.map((tag, index) => (
+                      <Badge key={`${item.id}-${index}`} bg="secondary" className="me-1">
+                        {tag}
+                      </Badge>
+                    ))}
+                </div>
+              </div>
+              <div>
+                {item.url && (
+                  <a href={item.url} target="_blank" rel="noopener noreferrer" className="me-2">
+                    <Eye size={20} />
+                  </a>
+                )}
+                <Button variant="danger" size="sm" onClick={() => handleRemoveItemFromBudget(item.id)}>
+                  Eliminar
+                </Button>
+              </div>
+            </li>
+          ))
+        ) : (
+          <p>No hay ítems en este presupuesto.</p>
+        )}
+      </ul>
     </div>
   );
 };

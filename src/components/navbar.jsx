@@ -20,10 +20,16 @@ function Navbar() {
               <Link className="nav-link" to="/etiquetas">Etiquetas</Link>
             </li>
             <li className="nav-item">
+              <Link className="nav-link" to="/items">Items</Link>
+            </li>
+            <li className="nav-item">
               <Link className="nav-link" to="/presupuestos">Presupuestos</Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/control">Control</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/">Recomendaciones</Link>
             </li>
           </ul>
         </div>

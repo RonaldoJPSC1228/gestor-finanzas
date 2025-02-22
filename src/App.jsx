@@ -6,6 +6,7 @@ import Navbar from "./components/navbar";
 import Home from "./pages/home";
 import FinanceManager from "./pages/financemanager";
 import Tags from "./pages/tags";
+import Items from "./pages/items";
 import Budgets from "./pages/budgets";
 import BudgetDetails from "./pages/budgetdetails";
 import Control from "./pages/control";
@@ -29,6 +30,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/gestor-finanzas" element={<FinanceManager />} />
         <Route path="/etiquetas" element={<Tags />} />
+        <Route path="/items" element={<Items />} />
         <Route path="/presupuestos" element={<Budgets budgets={budgets} setBudgets={setBudgets} />} />
         <Route path="/presupuesto/:id" element={<BudgetDetails budgets={budgets} setBudgets={setBudgets} />} />
         <Route path="/control" element={ <Control /> }></Route>
