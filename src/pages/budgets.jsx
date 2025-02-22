@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Button, Form, Modal, Breadcrumb } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 function Budgets({ budgets, setBudgets }) {
-  const [newBudgetName, setNewBudgetName] = useState("");
-  const [newBudgetAmount, setNewBudgetAmount] = useState("");
-  const [editBudget, setEditBudget] = useState(null);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [newBudgetName, setNewBudgetName] = useState(""); // Nombre del nuevo presupuesto
+  const [newBudgetAmount, setNewBudgetAmount] = useState(""); // Cantidad del nuevo presupuesto
+  const [editBudget, setEditBudget] = useState(null); // Presupuesto que se está editando
+  const [showEditModal, setShowEditModal] = useState(false); // Estado para mostrar el modal de edición
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Navegación a la página de detalles del presupuesto
 
+  // Manejo de la adición de un nuevo presupuesto
   const handleAddBudget = (e) => {
     e.preventDefault();
     if (newBudgetName.trim() === "") {
@@ -23,19 +24,22 @@ function Budgets({ budgets, setBudgets }) {
       subitems: [],
     };
     setBudgets((prev) => [...prev, newBudget]);
-    setNewBudgetName("");
-    setNewBudgetAmount("");
+    setNewBudgetName(""); // Resetear el campo de nombre
+    setNewBudgetAmount(""); // Resetear el campo de cantidad
   };
 
+  // Manejo de la eliminación de un presupuesto
   const handleDeleteBudget = (id) => {
     setBudgets((prev) => prev.filter((budget) => budget.id !== id));
   };
 
+  // Abrir el modal para editar un presupuesto
   const handleEditClick = (budget) => {
     setEditBudget(budget);
     setShowEditModal(true);
   };
 
+  // Guardar los cambios realizados a un presupuesto
   const handleSaveEdit = () => {
     if (!editBudget.name.trim()) {
       alert("El nombre del presupuesto no puede estar vacío.");
@@ -44,11 +48,18 @@ function Budgets({ budgets, setBudgets }) {
     setBudgets((prev) =>
       prev.map((b) => (b.id === editBudget.id ? editBudget : b))
     );
-    setShowEditModal(false);
+    setShowEditModal(false); // Cerrar el modal
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-4">
+      {/* Breadcrumb de navegación */}
+      <Breadcrumb>
+        <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+        <Breadcrumb.Item active>Gestión</Breadcrumb.Item>
+        <Breadcrumb.Item active>Presupuestos</Breadcrumb.Item>
+      </Breadcrumb>
+
       <h1 className="text-center text-info">Presupuestos</h1>
 
       {/* Formulario para añadir nuevo presupuesto */}

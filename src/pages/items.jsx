@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { Breadcrumb } from "react-bootstrap";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Items = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [items, setItems] = useState([]);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -96,8 +100,18 @@ const Items = () => {
     setEditingItem(null);
   };
 
+  // Obtener solo la última parte de la ruta para mostrarla en el breadcrumb
+  const pathnames = location.pathname.split("/").filter((x) => x);
+
   return (
     <div className="container mt-4">
+      {/* Breadcrumb */}
+      <Breadcrumb>
+        <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+        <Breadcrumb.Item active>Gestión</Breadcrumb.Item>
+        <Breadcrumb.Item active>Items</Breadcrumb.Item>
+      </Breadcrumb>
+
       <h2>Gestión de Ítems</h2>
 
       <form onSubmit={handleSubmit}>
@@ -108,13 +122,13 @@ const Items = () => {
           <input type="text" className="form-control mb-2" placeholder="URL (opcional)" value={url} onChange={(e) => setUrl(e.target.value)} />
 
           <select className="form-control mb-2" onChange={handleTagChange} value="">
-  <option value="">Seleccionar etiqueta</option>
-  {tags.map((tag) => (
-    <option key={tag.name} value={tag.name}>
-      {tag.name}
-    </option>
-  ))}
-</select>
+            <option value="">Seleccionar etiqueta</option>
+            {tags.map((tag) => (
+              <option key={tag.name} value={tag.name}>
+                {tag.name}
+              </option>
+            ))}
+          </select>
 
           <div className="mb-2">
             {selectedTags.map((tag, index) => (

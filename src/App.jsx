@@ -28,7 +28,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/gestor-finanzas" element={<FinanceManager />} />
+        {/* <Route path="/gestor-finanzas" element={<FinanceManager />} /> */}
         <Route path="/etiquetas" element={<Tags />} />
         <Route path="/items" element={<Items />} />
         <Route path="/presupuestos" element={<Budgets budgets={budgets} setBudgets={setBudgets} />} />

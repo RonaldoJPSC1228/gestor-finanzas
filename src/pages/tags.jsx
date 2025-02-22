@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Breadcrumb } from "react-bootstrap";
 
 const Tags = () => {
+  // const navigate = useNavigate();
+  // const location = useLocation();
   const [tags, setTags] = useState([]);
   const [tagName, setTagName] = useState("");
   const [tagColor, setTagColor] = useState("#000000");
@@ -62,6 +66,13 @@ const Tags = () => {
 
   return (
     <div className="container mt-4">
+      {/* Breadcrumb */}
+      <Breadcrumb>
+        <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+        <Breadcrumb.Item active>Gestión</Breadcrumb.Item>
+        <Breadcrumb.Item active>Etiquetas</Breadcrumb.Item>
+      </Breadcrumb>
+
       <h2>Gestión de Etiquetas</h2>
 
       <form onSubmit={handleSaveTag}>
