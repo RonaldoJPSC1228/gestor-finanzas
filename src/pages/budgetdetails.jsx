@@ -14,6 +14,7 @@ const BudgetDetails = ({ budgets, setBudgets }) => {
   const [items, setItems] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showChartModal, setShowChartModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const storedItems = JSON.parse(localStorage.getItem("items")) || [];
@@ -26,7 +27,6 @@ const BudgetDetails = ({ budgets, setBudgets }) => {
     return <p>Presupuesto no encontrado.</p>;
   }
 
-  // 🔹 Evitar bucle infinito al actualizar los subitems del presupuesto
   useEffect(() => {
     if (!budget) return;
 
@@ -37,9 +37,9 @@ const BudgetDetails = ({ budgets, setBudgets }) => {
           return updatedItem || subitem;
         });
 
-        if (JSON.stringify(updatedSubitems) !== JSON.stringify(b.subitems)) {
-          return { ...b, subitems: updatedSubitems };
-        }
+        return JSON.stringify(updatedSubitems) !== JSON.stringify(b.subitems)
+          ? { ...b, subitems: updatedSubitems }
+          : b;
       }
       return b;
     });
@@ -47,7 +47,7 @@ const BudgetDetails = ({ budgets, setBudgets }) => {
     if (JSON.stringify(updatedBudgets) !== JSON.stringify(budgets)) {
       setBudgets(updatedBudgets);
     }
-  }, [items]);
+  }, [items, budgets, budgetId, setBudgets]);
 
   const handleAddItemToBudget = (item) => {
     if (!budget.subitems.some((sub) => sub.id === item.id)) {
@@ -65,13 +65,15 @@ const BudgetDetails = ({ budgets, setBudgets }) => {
     setBudgets(updatedBudgets);
   };
 
-  // 🔹 Generar colores aleatorios para el gráfico
+  const filteredItems = items.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const generateRandomColors = (num) =>
     Array.from({ length: num }, () =>
       `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.7)`
     );
 
-  // 🔹 Configuración del gráfico de pastel
   const chartData = {
     labels: budget.subitems.map((item) => item.name),
     datasets: [
@@ -82,6 +84,9 @@ const BudgetDetails = ({ budgets, setBudgets }) => {
       },
     ],
   };
+
+  const totalSubitemsPrice = budget.subitems.reduce((total, item) => total + Number(item.price || 0), 0);
+
 
   return (
     <div className="container mt-4">
@@ -104,9 +109,17 @@ const BudgetDetails = ({ budgets, setBudgets }) => {
           <Modal.Title>Seleccionar Ítems</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Buscar ítem..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
           <ul className="list-group">
-            {items.length > 0 ? (
-              items.map((item) => {
+            {filteredItems.length > 0 ? (
+              filteredItems.map((item) => {
                 const isAlreadyAdded = budget.subitems.some((sub) => sub.id === item.id);
                 return (
                   <li key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
@@ -174,6 +187,10 @@ const BudgetDetails = ({ budgets, setBudgets }) => {
 
       {/* Lista de ítems en el presupuesto */}
       <h4>Ítems en este Presupuesto</h4>
+      <p>
+        <strong>Total de Ítems:</strong> ${totalSubitemsPrice}
+      </p>
+
       <ul className="list-group">
         {budget.subitems.length > 0 ? (
           budget.subitems.map((item) => (
