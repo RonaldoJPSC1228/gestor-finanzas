@@ -52,15 +52,15 @@ function Budgets({ budgets, setBudgets }) {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 text-center">
       {/* Breadcrumb de navegación */}
       <Breadcrumb>
         <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-        <Breadcrumb.Item active>Gestión</Breadcrumb.Item>
+        <Breadcrumb.Item href="/gestion">Gestión</Breadcrumb.Item>
         <Breadcrumb.Item active>Presupuestos</Breadcrumb.Item>
       </Breadcrumb>
 
-      <h1 className="text-center text-info">Presupuestos</h1>
+      <h2>Gestión de Presupuestos</h2>
 
       {/* Formulario para añadir nuevo presupuesto */}
       <Form className="row mt-4" onSubmit={handleAddBudget}>
@@ -100,7 +100,7 @@ function Budgets({ budgets, setBudgets }) {
                   className="m-1"
                   onClick={() => navigate(`/presupuesto/${budget.id}`)}
                 >
-                  Ver Detalles
+                  Ver Detalles <i className="fas fa-folder-open"></i>
                 </Button>
                 <Button
                   variant="info"
@@ -108,7 +108,7 @@ function Budgets({ budgets, setBudgets }) {
                   className="m-1"
                   onClick={() => handleEditClick(budget)}
                 >
-                  Editar
+                  <i className="fas fa-pencil-alt"></i>
                 </Button>
                 <Button
                   variant="danger"
@@ -116,7 +116,7 @@ function Budgets({ budgets, setBudgets }) {
                   className="m-1"
                   onClick={() => handleDeleteBudget(budget.id)}
                 >
-                  Eliminar
+                  <i className="fas fa-trash-alt"></i>
                 </Button>
               </div>
             </div>

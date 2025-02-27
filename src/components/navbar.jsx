@@ -22,27 +22,27 @@ function Navbar() {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
             <li className="nav-item">
-              <Link className="nav-link" to="/">Inicio</Link>
+              <Link className="nav-link" to="/">Inicio <i class="fas fa-house"></i></Link>
             </li>
 
             {/* Menú Plegable: Gestión */}
             <NavDropdown title="Gestión" id="gestion-dropdown">
               <NavDropdown.Item as={Link} to="/etiquetas">
-                Etiquetas
+                Etiquetas <i class="fas fa-tags"></i>
               </NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/items">
-                Items
+                Items <i class="fas fa-plus-circle"></i>
               </NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/presupuestos">
-                Presupuestos
+                Presupuestos <i class="fas fa-list"></i>
               </NavDropdown.Item>
             </NavDropdown>
 
             <li className="nav-item">
-              <Link className="nav-link" to="/control">Control</Link>
+              <Link className="nav-link" to="/control">Control <i class="fas fa-chart-line"></i></Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/recomendaciones">Recomendaciones</Link>
+              <Link className="nav-link" to="/recomendaciones">Recomendaciones <i class="fas fa-cart-plus"></i></Link>
             </li>
           </ul>
         </div>

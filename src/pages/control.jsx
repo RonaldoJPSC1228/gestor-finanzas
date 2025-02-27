@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, Table } from "react-bootstrap";
+import { Breadcrumb } from "react-bootstrap";
 
 const Control = () => {
-  // ✅ Cargar transacciones desde localStorage al iniciar
   const [transactions, setTransactions] = useState(() => {
     const storedTransactions = localStorage.getItem("transactions");
     return storedTransactions ? JSON.parse(storedTransactions) : [];
@@ -12,17 +12,18 @@ const Control = () => {
   const [name, setName] = useState("");
   const [type, setType] = useState("ingreso");
 
-  // ✅ Guardar en localStorage cada vez que las transacciones cambien
   useEffect(() => {
     localStorage.setItem("transactions", JSON.stringify(transactions));
   }, [transactions]);
 
-  // 🔹 Obtener saldo disponible
   const getBalance = () => {
-    return transactions.reduce((total, t) => (t.type === "ingreso" ? total + t.amount : total - t.amount), 0);
+    return transactions.reduce(
+      (total, t) =>
+        t.type === "ingreso" ? total + t.amount : total - t.amount,
+      0
+    );
   };
 
-  // 🔹 Manejar el envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
     const parsedAmount = parseFloat(amount);
@@ -54,17 +55,24 @@ const Control = () => {
     setName("");
   };
 
-  // 🔹 Limpiar historial
   const handleClearHistory = () => {
-    if (window.confirm("¿Estás seguro de que quieres borrar todo el historial?")) {
+    if (
+      window.confirm("¿Estás seguro de que quieres borrar todo el historial?")
+    ) {
       setTransactions([]);
       localStorage.removeItem("transactions");
     }
   };
 
   return (
-    <div className="container mt-4">
-      <h2>Control de Finanzas</h2>
+    <div className="container mt-4 text-center">
+      {/* Breadcrumb */}
+      <Breadcrumb>
+        <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+        <Breadcrumb.Item active>Control</Breadcrumb.Item>
+      </Breadcrumb>
+
+      <h2 className="text-success">Controlar Gastos / Ingresos</h2>
       <h3>Saldo Disponible: ${getBalance().toLocaleString("es-ES")}</h3>
 
       {/* Formulario */}
@@ -105,8 +113,6 @@ const Control = () => {
       {/* Historial */}
       <h3 className="mt-4">Historial</h3>
 
-      
-
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -121,7 +127,9 @@ const Control = () => {
               <tr key={t.id}>
                 <td>{t.name}</td>
                 <td>${t.amount.toLocaleString("es-ES")}</td>
-                <td style={{ color: t.type === "ingreso" ? "green" : "red" }}>{t.type}</td>
+                <td style={{ color: t.type === "ingreso" ? "green" : "red" }}>
+                  {t.type}
+                </td>
               </tr>
             ))
           ) : (

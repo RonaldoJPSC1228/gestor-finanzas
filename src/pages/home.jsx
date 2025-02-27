@@ -9,21 +9,27 @@ function Home() {
 
   return (
     <div className="container mt-5 text-center">
-
-      <h1 className="text-success">Gestor de Finanzas</h1>
+      <h1 className="text-info">¡Bienvenido!</h1>
       <p className="text-muted">
         Aquí podrás gestionar tus gastos, ingresos y presupuestos.
       </p>
 
       {/* Imagen Representativa */}
-      <img src="https://www.chipax.com/wp-content/uploads/2022/10/gestion_financiera.png" alt="Gestión de Finanzas" className="img-fluid my-4 rounded" />
+      <img
+        src="https://www.chipax.com/wp-content/uploads/2022/10/gestion_financiera.png"
+        alt="Gestión de Finanzas"
+        className="img-fluid my-4 rounded"
+      />
 
       {/* Botones de Navegación */}
       <div className="d-flex flex-wrap justify-content-center gap-2">
-        <button className="btn btn-primary" onClick={() => navigate("/etiquetas")}>
-          Ir a Etiquetas
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate("/gestion")}
+        >
+          Iniciar Gestión
         </button>
-        <button className="btn btn-primary" onClick={() => navigate("/items")}>
+        {/* <button className="btn btn-primary" onClick={() => navigate("/items")}>
           Ir a Items
         </button>
         <button className="btn btn-primary" onClick={() => navigate("/presupuestos")}>
@@ -31,7 +37,7 @@ function Home() {
         </button>
         <button className="btn btn-warning" onClick={() => navigate("/control")}>
           Ir a Control
-        </button>
+        </button> */}
       </div>
     </div>
   );

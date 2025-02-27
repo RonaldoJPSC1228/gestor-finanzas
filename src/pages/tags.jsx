@@ -69,11 +69,11 @@ const Tags = () => {
       {/* Breadcrumb */}
       <Breadcrumb>
         <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-        <Breadcrumb.Item active>Gestión</Breadcrumb.Item>
+        <Breadcrumb.Item href="/gestion">Gestión</Breadcrumb.Item>
         <Breadcrumb.Item active>Etiquetas</Breadcrumb.Item>
       </Breadcrumb>
 
-      <h2>Gestión de Etiquetas</h2>
+      <h2 className="text-center">Gestión de Etiquetas</h2>
 
       <form onSubmit={handleSaveTag}>
         <div className="mb-2">
@@ -125,12 +125,12 @@ const Tags = () => {
                 <strong>{tag.name}</strong>
                 <p>{tag.description}</p>
               </div>
-              <div>
-                <button className="btn btn-warning btn-sm me-2" onClick={() => handleEditTag(tag)}>
-                  ✏️ Editar
+              <div className="d-flex gap-2">
+                <button className="btn btn-warning btn-sm" onClick={() => handleEditItem(item)}>
+                    <i className="fas fa-pencil-alt"></i>
                 </button>
-                <button className="btn btn-danger btn-sm" onClick={() => handleDeleteTag(tag.id)}>
-                  ❌ Eliminar
+                <button className="btn btn-danger btn-sm" onClick={() => handleDeleteItem(item.id)}>
+                    <i className="fas fa-trash-alt"></i>
                 </button>
               </div>
             </li>

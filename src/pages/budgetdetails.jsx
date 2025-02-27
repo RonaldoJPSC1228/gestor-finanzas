@@ -96,11 +96,15 @@ const BudgetDetails = ({ budgets, setBudgets }) => {
       </p>
 
       <Button variant="primary" className="mb-3 me-2" onClick={() => setShowModal(true)}>
-        Items
+        <i class="fas fa-plus-circle"></i>
+        
+        {/* <i class="fas fa-folder-open"></i> */}
+        
+        
       </Button>
 
       <Button variant="info" className="mb-3" onClick={() => setShowChartModal(true)}>
-        Ver Gráfico
+        Grafico
       </Button>
 
       {/* Modal para seleccionar ítems */}
@@ -213,7 +217,8 @@ const BudgetDetails = ({ budgets, setBudgets }) => {
                   </a>
                 )}
                 <Button variant="danger" size="sm" onClick={() => handleRemoveItemFromBudget(item.id)}>
-                  Eliminar
+                  {/* Eliminar */}
+                  <i className="fas fa-trash-alt"></i>
                 </Button>
               </div>
             </li>
