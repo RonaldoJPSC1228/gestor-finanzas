@@ -65,14 +65,14 @@ const Control = () => {
   };
 
   return (
-    <div className="container mt-4 text-center">
+    <div className="container mt-4">
       {/* Breadcrumb */}
       <Breadcrumb>
         <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
         <Breadcrumb.Item active>Control</Breadcrumb.Item>
       </Breadcrumb>
 
-      <h2 className="text-success">Controlar Gastos / Ingresos</h2>
+      <h2 className="text-success text-center">Controlar Gastos / Ingresos</h2>
       <h3>Saldo Disponible: ${getBalance().toLocaleString("es-ES")}</h3>
 
       {/* Formulario */}
